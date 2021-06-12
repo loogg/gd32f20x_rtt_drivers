@@ -99,7 +99,7 @@ int gd32_flash_write(rt_uint32_t addr, const rt_uint8_t *buf, size_t size)
         return -RT_EINVAL;
     }
 
-    if ((end_addr) > GD32_FLASH_END_ADDRESS)
+    if (end_addr > GD32_FLASH_END_ADDRESS)
     {
         LOG_E("write outrange flash size! addr is (0x%p)", (void *)(addr + size));
         return -RT_EINVAL;
@@ -244,33 +244,62 @@ int gd32_flash_erase(rt_uint32_t addr, size_t size)
 
 #if defined(PKG_USING_FAL)
 
-static int fal_flash_read(long offset, rt_uint8_t *buf, size_t size);
-static int fal_flash_write(long offset, const rt_uint8_t *buf, size_t size);
-static int fal_flash_erase(long offset, size_t size);
+static int fal_flash_read_2k(long offset, rt_uint8_t *buf, size_t size);
+static int fal_flash_write_2k(long offset, const rt_uint8_t *buf, size_t size);
+static int fal_flash_erase_2k(long offset, size_t size);
 
-const struct fal_flash_dev gd32_onchip_flash =
+static int fal_flash_read_4k(long offset, rt_uint8_t *buf, size_t size);
+static int fal_flash_write_4k(long offset, const rt_uint8_t *buf, size_t size);
+static int fal_flash_erase_4k(long offset, size_t size);
+
+const struct fal_flash_dev gd32_onchip_flash_2k =
 { 
-    .name       = "onchip_flash",
+    .name       = "onchip_flash_2k",
     .addr       = GD32_FLASH_START_ADRESS,
-    .len        = GD32_FLASH_SIZE,
-    .blk_size   = ON_CHIP_FLASH_MAX_ERASE_SIZE,
-    .ops        = {RT_NULL, fal_flash_read, fal_flash_write, fal_flash_erase},
+    .len        = (SM_MAX_PAGE * SM_PAGE_ERASE_SIZE),
+    .blk_size   = SM_PAGE_ERASE_SIZE,
+    .ops        = {RT_NULL, fal_flash_read_2k, fal_flash_write_2k, fal_flash_erase_2k},
     .write_gran = 0
 };
 
-static int fal_flash_read(long offset, rt_uint8_t *buf, size_t size)
+const struct fal_flash_dev gd32_onchip_flash_4k =
+{ 
+    .name       = "onchip_flash_4k",
+    .addr       = (GD32_FLASH_START_ADRESS + (SM_MAX_PAGE * SM_PAGE_ERASE_SIZE)),
+    .len        = (LG_MAX_PAGE * LG_PAGE_ERASE_SIZE),
+    .blk_size   = LG_PAGE_ERASE_SIZE,
+    .ops        = {RT_NULL, fal_flash_read_4k, fal_flash_write_4k, fal_flash_erase_4k},
+    .write_gran = 0
+};
+
+static int fal_flash_read_2k(long offset, rt_uint8_t *buf, size_t size)
 {
-    return gd32_flash_read(gd32_onchip_flash.addr + offset, buf, size);
+    return gd32_flash_read(gd32_onchip_flash_2k.addr + offset, buf, size);
 }
 
-static int fal_flash_write(long offset, const rt_uint8_t *buf, size_t size)
+static int fal_flash_write_2k(long offset, const rt_uint8_t *buf, size_t size)
 {
-    return gd32_flash_write(gd32_onchip_flash.addr + offset, buf, size);
+    return gd32_flash_write(gd32_onchip_flash_2k.addr + offset, buf, size);
 }
 
-static int fal_flash_erase(long offset, size_t size)
+static int fal_flash_erase_2k(long offset, size_t size)
 {
-    return gd32_flash_erase(gd32_onchip_flash.addr + offset, size);
+    return gd32_flash_erase(gd32_onchip_flash_2k.addr + offset, size);
+}
+
+static int fal_flash_read_4k(long offset, rt_uint8_t *buf, size_t size)
+{
+    return gd32_flash_read(gd32_onchip_flash_4k.addr + offset, buf, size);
+}
+
+static int fal_flash_write_4k(long offset, const rt_uint8_t *buf, size_t size)
+{
+    return gd32_flash_write(gd32_onchip_flash_4k.addr + offset, buf, size);
+}
+
+static int fal_flash_erase_4k(long offset, size_t size)
+{
+    return gd32_flash_erase(gd32_onchip_flash_4k.addr + offset, size);
 }
 
 #endif
