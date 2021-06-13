@@ -4,7 +4,26 @@ from building import *
 
 cwd = GetCurrentDir()
 
-src = Glob('*.c')
+src = Split("""
+""")
+
+if GetDepend(['BSP_USING_GPIO']):
+    src += ['drv_gpio.c']
+
+if GetDepend(['BSP_USING_USART']):
+    src += ['drv_usart.c']
+
+if GetDepend(['BSP_USING_WDT']):
+    src += ['drv_wdt.c']
+
+if GetDepend(['BSP_USING_I2C']):
+    src += ['drv_soft_i2c.c']
+
+if GetDepend(['BSP_USING_SPI']):
+    src += ['drv_spi.c']
+
+if GetDepend(['BSP_USING_ON_CHIP_FLASH']):
+    src += ['drv_flash.c']
 
 path = [cwd]
 
