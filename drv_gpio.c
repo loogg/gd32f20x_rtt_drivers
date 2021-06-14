@@ -27,11 +27,9 @@ struct gd32_gpio_irq
     void *args;
 };
 
-/* ----------------------------根据实际情况更改------------------------------- */
 static const struct gd32_gpio gpio_obj[] = DRV_GPIO_TABLE;
 
 static struct gd32_gpio_irq gpio_irq_obj[] = DRV_GPIO_IRQ_TABLE;
-/* -------------------------------------------------------------------------- */
 
 static uint32_t pin_irq_enable_mask = 0;
 
