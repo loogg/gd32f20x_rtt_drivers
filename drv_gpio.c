@@ -264,7 +264,7 @@ static rt_err_t gd32_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt_
     return RT_EOK;
 }
 
-static struct rt_pin_ops gd32_pin_ops = 
+static const struct rt_pin_ops gd32_pin_ops = 
 {
     gd32_pin_mode,
     gd32_pin_write,
