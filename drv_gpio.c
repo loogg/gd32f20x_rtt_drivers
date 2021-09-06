@@ -38,7 +38,7 @@ static const struct gd32_gpio *get_gpio(int pin)
     int num = sizeof(gpio_obj) / sizeof(gpio_obj[0]);
     if((pin < 0) || (pin >= num))
         return RT_NULL;
-    
+
     return &gpio_obj[pin];
 }
 
@@ -47,7 +47,7 @@ static void gd32_pin_mode(rt_device_t dev, rt_base_t pin, rt_base_t mode)
     const struct gd32_gpio *gpio = get_gpio(pin);
     if(gpio == RT_NULL)
         return;
-    
+
     rcu_periph_clock_enable(gpio->rcu_periph);
 
     uint32_t pin_mode = GPIO_MODE_OUT_PP;
@@ -122,7 +122,7 @@ static rt_err_t gd32_pin_attach_irq(struct rt_device *device, rt_int32_t pin,
 
     if(gpio_irq == RT_NULL)
         return -RT_ERROR;
-    
+
     rt_base_t level = rt_hw_interrupt_disable();
     if(gpio_irq->used)
     {
@@ -164,7 +164,7 @@ static rt_err_t gd32_pin_detach_irq(struct rt_device *device, rt_int32_t pin)
 
     if(gpio_irq == RT_NULL)
         return -RT_ERROR;
-    
+
     rt_base_t level = rt_hw_interrupt_disable();
     gpio_irq->hdr = RT_NULL;
     gpio_irq->args = RT_NULL;
@@ -193,15 +193,10 @@ static rt_err_t gd32_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt_
 
     if(gpio_irq == RT_NULL)
         return -RT_ERROR;
-    
+
     if(enabled == PIN_IRQ_ENABLE)
     {
         rt_base_t level = rt_hw_interrupt_disable();
-        if(gpio_irq->used)
-        {
-            rt_hw_interrupt_enable(level);
-            return -RT_ERROR;
-        }
 
         exti_trig_type_enum trigger_mode;
 
@@ -264,7 +259,7 @@ static rt_err_t gd32_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt_
     return RT_EOK;
 }
 
-static const struct rt_pin_ops gd32_pin_ops = 
+static const struct rt_pin_ops gd32_pin_ops =
 {
     gd32_pin_mode,
     gd32_pin_write,
